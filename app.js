@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-03-30 15:36:24
- * @LastEditTime: 2023-04-03 15:31:09
+ * @LastEditTime: 2023-04-16 16:46:14
  */
 var createError = require('http-errors');
 var express = require('express');
@@ -13,7 +13,11 @@ var indexRouter = require('./routes/index');
 const loginRouter =require('./routes/login')
 const productRouter =require('./routes/product')
 const categoryRouter =require('./routes/category')
+const orderRouter =require('./routes/order')
 const swiperRouter =require('./routes/wx/swiper')
+const cartRouter= require('./routes/wx/cart')
+const addressRouter = require('./routes/wx/address')
+const videoRouter = require('./routes/video')
 var app = express();
 
 
@@ -28,6 +32,10 @@ app.use('/api',loginRouter)
 app.use('/api',productRouter)
 app.use('/api',categoryRouter)
 app.use('/api',swiperRouter)
+app.use('/api',cartRouter)
+app.use('/api',addressRouter)
+app.use('/api',orderRouter)
+app.use('/api',videoRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

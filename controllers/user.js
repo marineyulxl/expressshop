@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-03-30 17:06:44
- * @LastEditTime: 2023-04-01 21:15:10
+ * @LastEditTime: 2023-04-04 21:44:27
  */
 const UsersModel = require('../models/user')
 const request = require('request');
@@ -16,7 +16,7 @@ class UserController {
       this.addUser(openid)
       return
     }
-    console.log('数据时', data);
+    // console.log('数据时', data);
   }
   addUser = async (data) => {
     const user = await UsersModel.create({ openid: data })
@@ -32,7 +32,9 @@ class UserController {
         const data = JSON.parse(body);
         const { openid, session_key } = data;
         this.getUser(openid)
-        let token = jwt.sign({ openid }, 'SECRET', {})
+        let token = jwt.sign({ openid }, SECRET, {})
+       
+     
         res.json({
           code: 200,
           message: '登录成功',

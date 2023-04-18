@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-03-31 17:05:54
- * @LastEditTime: 2023-04-03 21:14:38
+ * @LastEditTime: 2023-04-16 17:00:53
  */
 
 const { model } = require('mongoose');
@@ -67,7 +67,7 @@ class ProductController {
                 let url = '/images/' + files.images.newFilename;
                 images.push(url);
             }
-
+            
             // 创建新产品
             const newProduct = await productModel.create({
                 name,
@@ -115,12 +115,23 @@ class ProductController {
             .limit(+limit)
             .sort(sortObj)
             .populate('category', 'name')
-            .then((data) => {
-                res.status(200).json({
-                    code: 200,
-                    message: '查询成功',
-                    data: data,
-                });
+            .then(async (data) => {
+                const count = await productModel.countDocuments(query);
+                if (data.length === 0) {
+                    res.status(404).json({
+                        code: 404,
+                        message: '查询结果为空',
+                        data: [],
+                        total: count,
+                    });
+                } else {
+                    res.status(200).json({
+                        code: 200,
+                        message: '查询成功',
+                        data: data,
+                        total: count,
+                    });
+                }
             })
             .catch((err) => {
                 res.status(500).json({
