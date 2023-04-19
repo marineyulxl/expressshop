@@ -1,10 +1,11 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-03 21:28:17
- * @LastEditTime: 2023-04-05 14:14:53
+ * @LastEditTime: 2023-04-18 22:34:43
  */
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
+const AdministratorModel = require('../models/web/Administrator')
 const {  SECRET } = require('../config/login')
 
 
@@ -18,17 +19,31 @@ async function authMiddleware(req, res, next) {
     return res.status(401).json({code:401, message: '没有token.' });
   }
 
- 1
   try {
     const decodedToken =jwt.verify(token, SECRET);
-    const user = await UserModel.findOne({openid:decodedToken.openid});
+    console.log(decodedToken);
+    const { openid, adminId } = decodedToken;
+    if(openid){
+      const user = await UserModel.findOne({openid});
 
-    if (!user) {
-      return res.status(401).json({ message: '没有该用户' });
+      if (!user) {
+        return res.status(401).json({ message: '没有该用户' });
+      }
+      req.user = user;
+     
+      next();
+    }else if(adminId){
+        const admin = await AdministratorModel.findById(adminId)
+        if (!admin) {
+          return res.status(401).json({ message: '没有该用户' });
+        }
+        req.admin =admin.username
+        console.log(req.admin,1);
+        next()
+    }else {
+      return res.status(401).json({ message: '无效的token' });
     }
-    req.user = user;
-   
-    next();
+    
   } catch (err) {
     console.log(err);
     return res.status(401).json({ message: '无效的token' });

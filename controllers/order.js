@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-11 19:39:13
- * @LastEditTime: 2023-04-17 10:38:30
+ * @LastEditTime: 2023-04-18 22:25:26
  */
 
 const orderModel = require('../models/order');
@@ -138,6 +138,24 @@ class OrderController {
           });
         }
     }
+    async getAllOrders(req, res) {
+        try {
+          const orders = await orderModel.find().populate('user productList.productId', 'username phone email name price images');
+          console.log(orders);
+          res.status(200).json({
+            code: 200,
+            message: '获取订单信息成功',
+            data: orders
+          });
+        } catch (err) {
+          console.error(err);
+          res.status(500).json({
+            code: 500,
+            message: '服务器错误'
+          });
+        }
+      }
+      
     deleteOrder = async (req, res) => {
         const orderId = req.params.orderId;
         try {

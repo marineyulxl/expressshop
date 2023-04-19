@@ -1,3 +1,8 @@
+/*
+ * @Author: marineyulxl
+ * @Date: 2023-03-30 15:47:54
+ * @LastEditTime: 2023-04-18 22:36:24
+ */
 const { Schema, model } = require('mongoose')
 
 const userSchema = new Schema({
@@ -6,4 +11,4 @@ const userSchema = new Schema({
     updatedAt: { type: Date, default: Date.now },
 })
 
-module.exports=model('Users',userSchema)
+module.exports=model('User',userSchema)
