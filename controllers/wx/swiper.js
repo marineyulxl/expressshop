@@ -52,12 +52,11 @@ class swiperCotroller {
     }
     //读取swiper
     async getSwiper(req, res, next) {
-        const data = await swiperModel.find()
-        console.log(data);
+        const data = await swiperModel.find().populate({ path: 'product', select: 'name' })
         if (!data) {
-            res.status(500).json({
-                code: 500,
-                message: '查询失败',
+            res.status(404).json({
+                code: 404,
+                message: '没有轮播图',
                 data: null
             })
         }
@@ -68,7 +67,7 @@ class swiperCotroller {
         })
     }
     //修改轮播图
-   async updateSwiper(req, res, next) {
+    async updateSwiper(req, res, next) {
         const form = formidable({
             multiples: true,
             uploadDir: __dirname + '/../../public/swiper',
@@ -85,6 +84,7 @@ class swiperCotroller {
                 });
             });
             const { id } = req.params;
+            const {product} =fields
             const swiperToUpdate = await swiperModel.findById(id);
             if (!swiperToUpdate) {
                 //如果不存在删除上传的图片
@@ -95,20 +95,23 @@ class swiperCotroller {
                     message: '轮播图不存在',
                 });
             }
-            // 删除之前的图片
-            const previousImageUrl = swiperToUpdate.imageUrl;
-            // console.log(previousImageUrl);
-            if (previousImageUrl) {
-                const imagePath = path.join(__dirname, '/../../public', previousImageUrl);
-                try {
-                    await fs.promises.unlink(imagePath);
-                    console.log('删除失败:', imagePath);
-                } catch (error) {
-                    console.error('Error removing file:', error);
+            let imageUrl = swiperToUpdate.imageUrl;
+            // 如果有新的图片上传，则使用新的图片
+            if (files.imageUrl && files.imageUrl.newFilename) {
+                // 删除之前的图片
+                const previousImageUrl = swiperToUpdate.imageUrl;
+                if (previousImageUrl) {
+                    const imagePath = path.join(__dirname, '/../../public', previousImageUrl);
+                    try {
+                        await fs.promises.unlink(imagePath);
+                    } catch (error) {
+                        console.error('Error removing file:', error);
+                    }
                 }
+                imageUrl = '/swiper/' + files.imageUrl.newFilename;
             }
-            let imageUrl = '/swiper/' + files.imageUrl.newFilename;
-            const updatedSwiper = await swiperModel.findByIdAndUpdate(id, { ...req.body, imageUrl, updatedAt: Date.now() }, { new: true })
+            
+            const updatedSwiper = await swiperModel.findByIdAndUpdate(id, { product, imageUrl, updatedAt: Date.now() }, { new: true })
             return res.status(200).json({
                 code: 200,
                 message: '修改成功',
@@ -123,10 +126,10 @@ class swiperCotroller {
             });
         }
     }
+    
     //删除轮播图
     delectSwiper= async (req,res,next)=>{
         const id = req.params.id;
-        console.log("轮播图id",id);
         try {
             const swiper = await swiperModel.findOne({ _id: id });
            

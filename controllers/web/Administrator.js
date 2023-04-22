@@ -1,3 +1,8 @@
+/*
+ * @Author: marineyulxl
+ * @Date: 2023-04-18 20:26:15
+ * @LastEditTime: 2023-04-22 22:46:00
+ */
 const AdministratorModel = require('../../models/web/Administrator')
 const bcrypt = require('bcrypt');
 const { SECRET } = require('../../config/login')
@@ -37,7 +42,7 @@ class AdministratorController{
         // 登录
   async login(req, res) {
     const { username, password } = req.body;
-
+    
     try {
       const admin = await AdministratorModel.findOne({ username });
 
@@ -56,9 +61,9 @@ class AdministratorController{
           message: '用户名或密码错误'
         });
       }
-
+      
       // 生成 token
-      const token = jwt.sign({ adminId: admin._id }, SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ adminId: admin._id }, SECRET, { expiresIn: '60s' });
 
       res.status(200).json({
         code: 200,

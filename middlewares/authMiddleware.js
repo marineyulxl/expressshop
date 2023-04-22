@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-03 21:28:17
- * @LastEditTime: 2023-04-18 22:34:43
+ * @LastEditTime: 2023-04-22 22:20:38
  */
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
@@ -21,7 +21,7 @@ async function authMiddleware(req, res, next) {
 
   try {
     const decodedToken =jwt.verify(token, SECRET);
-    console.log(decodedToken);
+    console.log('decodedToken',decodedToken);
     const { openid, adminId } = decodedToken;
     if(openid){
       const user = await UserModel.findOne({openid});

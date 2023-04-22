@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-16 16:40:02
- * @LastEditTime: 2023-04-16 17:27:04
+ * @LastEditTime: 2023-04-22 13:44:41
  */
 const videoModel = require('../models/video');
 const fs = require('fs');
@@ -78,13 +78,13 @@ class VideoController {
     if (!data) {
       res.status(500).json({
         code: 500,
-        message: '查询失败',
+        message: '获取视频失败',
         data: null,
       });
     }
     res.status(200).json({
       code: 200,
-      message: '查询成功',
+      message: '获取视频成功',
       data: data,
     });
   }
