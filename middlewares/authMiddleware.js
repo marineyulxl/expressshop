@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-03 21:28:17
- * @LastEditTime: 2023-04-22 22:20:38
+ * @LastEditTime: 2023-04-23 15:26:33
  */
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
@@ -38,7 +38,8 @@ async function authMiddleware(req, res, next) {
           return res.status(401).json({ message: '没有该用户' });
         }
         req.admin =admin.username
-        console.log(req.admin,1);
+        req.adminId=adminId
+        console.log(1);
         next()
     }else {
       return res.status(401).json({ message: '无效的token' });

@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-18 20:26:15
- * @LastEditTime: 2023-04-22 22:46:00
+ * @LastEditTime: 2023-04-23 15:31:53
  */
 const AdministratorModel = require('../../models/web/Administrator')
 const bcrypt = require('bcrypt');
@@ -63,7 +63,7 @@ class AdministratorController{
       }
       
       // 生成 token
-      const token = jwt.sign({ adminId: admin._id }, SECRET, { expiresIn: '60s' });
+      const token = jwt.sign({ adminId: admin._id }, SECRET, { expiresIn: '24h' });
 
       res.status(200).json({
         code: 200,
@@ -84,6 +84,44 @@ class AdministratorController{
       });
     }
   }
+  async updatePassword(req, res) {
+    const { oldPassword, newPassword } = req.body;
+    const adminId = req.adminId; // 获取登录管理员的id
+    console.log(adminId);
+    try {
+      const admin = await AdministratorModel.findById(adminId);
+  
+      if (!admin) {
+        return res.status(400).json({
+          code: 400,
+          message: '管理员不存在'
+        });
+      }
+  
+      const isPasswordMatch = await bcrypt.compare(oldPassword, admin.password);
+  
+      if (!isPasswordMatch) {
+        return res.status(400).json({
+          code: 400,
+          message: '原密码不正确'
+        });
+      }
+  
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await AdministratorModel.findByIdAndUpdate(adminId, { password: hashedPassword });
+      res.status(200).json({
+        code: 200,
+        message: '密码修改成功'
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        code: 500,
+        message: '服务器错误'
+      });
+    }
+  }
+  
 }
 
 module.exports = new AdministratorController()
