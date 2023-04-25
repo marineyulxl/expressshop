@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-02 16:27:06
- * @LastEditTime: 2023-04-12 15:30:51
+ * @LastEditTime: 2023-04-25 14:19:27
  */
 
 const CartModel =require('../models/cart')
@@ -40,17 +40,21 @@ class cartController {
     //   查询商品
       async  getCart(req, res) {
         const userId = req.user._id; // 获取用户ID
-      
+        
         try {
           const cart = await CartModel.findOne({ user: userId }) .populate({
             path: 'products.product',
             select: 'name price images'
           })
           .select('-__v -createdAt -updatedAt ');
+          if (!cart) {
+            return res.status(404).json({ message: '购物车为空' });
+          }
+          
           //解构代码
           const products = cart.products.map(item => {
             const { _id, product, quantity, isChecked } = item;
-            const { _id: productId, name, price ,images} = product;
+            const { _id:productId, name, price ,images} = product;
             return { productId, name, price, quantity, isChecked ,images};
           });
           const result = {

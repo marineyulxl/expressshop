@@ -1,7 +1,7 @@
 /*
  * @Author: marineyulxl
  * @Date: 2023-04-03 21:28:17
- * @LastEditTime: 2023-04-23 15:26:33
+ * @LastEditTime: 2023-04-25 14:10:59
  */
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/user');
@@ -21,7 +21,6 @@ async function authMiddleware(req, res, next) {
 
   try {
     const decodedToken =jwt.verify(token, SECRET);
-    console.log('decodedToken',decodedToken);
     const { openid, adminId } = decodedToken;
     if(openid){
       const user = await UserModel.findOne({openid});
@@ -30,7 +29,6 @@ async function authMiddleware(req, res, next) {
         return res.status(401).json({ message: '没有该用户' });
       }
       req.user = user;
-     
       next();
     }else if(adminId){
         const admin = await AdministratorModel.findById(adminId)
